@@ -45,8 +45,9 @@ class UnionFind
 
 end
 
-lines_num =20
-file_name = 'data3.txt'
+lines_num =200000
+bit_number = 24
+file_name = 'data.txt'
 lines = Array.new(lines_num){Array.new(2,0)}
 i=0
 File.open(file_name).each do |line|
@@ -57,40 +58,43 @@ File.open(file_name).each do |line|
   end
 i=i+1
 end
+
+result = UnionFind.new(lines_num)
+
 hash = Hash.new()
 lines.each do |i|
   if hash[i[1]].nil?
     hash[i[1]] = [i[0]]
   else
-	hash[i[1]] << i[0]
+	  hash[i[1]] << i[0]
+    result.union(hash[i[1]][0],i[0])
   end
 end
-
+mask = []
+(0..23).each do |j|
+  mask << 2**j
+end
 new_mask=[]
 (0..23).each do |i|
   (0..23).each do |j|
     if i!=j
 	    new_mask<< mask[i]+mask[j]
-    else
-      new_mask << 2**i
 	  end
   end
 
 end
-new_mask=new_mask.uniq.sort
+new_mask =new_mask+mask
+new_mask=new_mask.uniq
 
-hash = hash.sort.to_h
 
+# 1.to_s(2).rjust(12, "0")
 
-result = UnionFind.new(lines_num)
 
 new_mask.each do |j|
   hash.each do |key,value|
    # if more than one in the value, need to connect them.
-   (1..value.size-1).each do |i|
-      result.union(value[i],value[i-1])
-   end
-   temp = j ^ key
+    temp = j ^ key.to_i(2)
+    temp1=temp.to_s(2).rjust(bit_number,'0')
     if !hash[temp].nil? 
       value.each do |m|
         hash[temp].each do |n|
@@ -105,6 +109,15 @@ new_mask.each do |j|
   end
 end
 
+hash.each do |key, value|
+  if value.size ==2
+    result.union(value[0],value[1]) unless result.connected?(value[0],value[1])
+  elsif value.size ==3 
+    result.union(value[0],value[1]) unless result.connected?(value[0],value[1])
+    result.union(value[0],value[2]) unless result.connected?(value[0],value[2])
+    result.union(value[1],value[2]) unless result.connected?(value[2],value[1])
+  end
+end
 
 
 
