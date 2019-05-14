@@ -1,17 +1,20 @@
 require 'csv'
-a=Array.new(10){Array.new(3,0)}
-i=0
-CSV.foreach("data1.csv") do |row|
-  a[i][0]=row[0].to_i
-  a[i][1]=row[1].to_i
-  a[i][2]=row[2].to_i
-  i=i+1
+lines = Array.new
+File.open('data.txt').each { |line| lines << line}
+
+a=Array.new(lines.size-1){Array.new(3,0)}
+
+(1..lines.size-1).each do |i|
+  temp = lines[i].split
+  a[i-1][0]=temp[0].to_i
+  a[i-1][1]=temp[1].to_i
+  a[i-1][2]=temp[2].to_i
 end
 a=a.sort{|a,b|a[2]<=>b[2]}
 
 v_number= a.size
-k=2
-node_number = 5 
+k=4
+node_number = 500 
 loop_number = node_number-k
 
 # starft from node_number clusters 
@@ -23,7 +26,7 @@ end
 # list.sort{|a,b|a[2]<=>b[2]}
 #  => [[1, 2, 1], [3, 4, 1], [1, 3, 2], [2, 4, 3], [2, 3, 4], [1, 4, 4], [1, 5, 5], [2, 5, 6], [3, 5, 7], [4, 5, 8]]
 
-
+result = -1
  a.each do |i|
     
  	temp1 = clusters.select{|a| a.include?(i[0])}
@@ -32,7 +35,8 @@ end
  		puts "they are in the same cluster"
     else #not in the same cluster
     	if clusters.size == k 
-    		break i
+    		result= i[2]
+    		break 
     	end
     	temp3 = temp1[0] + temp2[0]
         clusters << temp3
