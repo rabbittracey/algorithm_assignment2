@@ -1,13 +1,18 @@
+import sys, threading
+sys.setrecursionlimit(800000)
+threading.stack_size(67108864)
 #read the data
-@data=Array.new(){Array.new(2,0)}
+@data=[]
 node_number = 875714
-i=0
+
 File.open('data.txt').each do |line|
   temp = line.split().map{|a| a.to_i}
-  @data[i] = temp if temp[0] !=temp[1]
+  @data << temp if temp[0] !=temp[1]
   # @data[i] = temp
-  i=i+1
 end
+
+
+
 
 
 
@@ -27,11 +32,10 @@ def DFS(data,i)
   @node_explore[i] =1
   @node_leader[i] = @s
   #loop
-  i_loop = data.select{|a| a[0] == i}
-  puts i_loop
+  i_loop = @data.select{|a| a[0] == i}
   i_loop.each do |k|
     if @node_explore[k[1]]==0
-      DFS(@data,k[i])
+      DFS(@data,k[1])
     end
   end
   @t=@t+1
@@ -44,7 +48,7 @@ end
 
 
 (0..node_number-1).each do |i|
-  j=@data.length-1-i
+  j=node_number-1-i
   if @node_explore[j] == 0
     # @s=i
     DFS(@data,j)
